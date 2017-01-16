@@ -1,0 +1,19 @@
+fastest wait-free is slower than the fastest lock-free
+
+lock-free:
+ - MS-Queue : CAS failures (with a reasonable number of threads)
+
+wait-free:
+- based on MS-Queue: overhead of helping mechanism
+- P-Sim, use Fetch and Add too
+
+blocking:
+- CC-queue: combining
+
+lock-free:
+- LCRQ: circular ring queue with Fetch and Add to get index, enqueue and dequeue
+with double width compare and swap, which is not always available
+
+fast-path slow-path → with MS-queue as fast path
+
+Compare and swap problem: unbounded operation

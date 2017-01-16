@@ -1,4 +1,29 @@
+fast concurrent data structures are necessary to exploit multicore processors and
+multiprocessors machine. To deliver high scalable performance, we need shared
+objects (data structures) whose operations are scalable. Each operations of an
+object (adding, removing, modifying an element) much perform \textit{reasonably}
+well even when the number of threads sharing an object is high.
+
+mutex expensive even when we are alone (system call)
+
+we define levels of process guarantees on each operation of an object. Those
+predict how an object will behave under high contention. The strongest guaranty
+is wait-free, which means an operation will complete in a finite number of steps
+no matter how many threads is accessing this object. Lock-free operations
+complete in a finite number of threads only if \textit{some} threads are
+accessing the object, which means out of all threads sharing one object, most
+threads can never progress while a small number can. Obstruction-free is the
+weakest guaranty. Only one thread is guaranteed to complete an operation in a
+finite number of steps.
+
+While an object can be wait-free, this doesn't mean performance
+
+In this paper, C. Yang and J. Mellor-Crummey expose a new queue providing a
+wait-free guaranty and also delivering high performance.
+
+
+
 Problematic:
 
-we avoid the CAS retry problem by using Fetch and Fetch to find an index
+we avoid the Compare and Swap retry problem by using Fetch and Fetch to find an index
 can fast-path slow-path works for non-blocking algorithm using Fetch and Add ?

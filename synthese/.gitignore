@@ -1,3 +1,7 @@
-*.aux
+*-blx.bib
+*.bbl
+*.blg
+*.run.xml
 *.log
+*.aux
 auto/

@@ -1,29 +1,61 @@
-fast concurrent data structures are necessary to exploit multicore processors and
-multiprocessors machine. To deliver high scalable performance, we need shared
-objects (data structures) whose operations are scalable. Each operations of an
-object (adding, removing, modifying an element) much perform \textit{reasonably}
-well even when the number of threads sharing an object is high.
+Fast concurrent data structures are necessary to exploit the power of multi-core
+processors and multiprocessors machine. To deliver high scalable performance,
+applications may need shared objects (data structures) whose operations are
+scalable. Each operations of an object (adding, removing, modifying an element)
+much perform \textit{reasonably} well even when the number of threads sharing an
+object is high.
 
-mutex expensive even when we are alone (system call)
+One way to construct concurrent data structures is by using an object with
+blocking operations. An example of such object would be a concurrent queue whose
+operations have been protected with mutual exclusion (locks). This approach is
+not scalable and it will lead to poor performance under high contention.
+Unexpected delay from one thread prevents the others to use the object. The
+source of the delay is multiple : operating system preemption, cache miss, page
+fault, etc. Therefore designing non-blocking objects is the topic of lots of
+past and ongoing researches.
 
-we define levels of process guarantees on each operation of an object. Those
-predict how an object will behave under high contention. The strongest guaranty
-is wait-free, which means an operation will complete in a finite number of steps
-no matter how many threads is accessing this object. Lock-free operations
-complete in a finite number of threads only if \textit{some} threads are
-accessing the object, which means out of all threads sharing one object, most
-threads can never progress while a small number can. Obstruction-free is the
-weakest guaranty. Only one thread is guaranteed to complete an operation in a
-finite number of steps.
+We define here levels of process guarantees on each operation of a non-blocking
+object \cite{Yang:2016:WQF:3016078.2851168}. Those are meant to predict how an
+object will behave under high contention. The strongest guaranty is wait-free,
+which means an operation will complete in a finite number of steps regardless of
+how many threads is accessing this object and at what speed. Lock-free
+operations complete in a finite number of steps only for \textit{some} threads
+while it may not be the case for the others. Obstruction-free is the weakest
+guaranty. Only one thread is guaranteed to complete an operation in a finite
+number of steps.
 
-While an object can be wait-free, this doesn't mean performance
+While an object can be wait-free, this doesn't mean it will enable the
+application to achieve high scalability. Actually, (*reference*) most past
+wait-free queue implementations perform worse than others lock-free or blocking
+queue. To achieve a wait-free guarantee, most wait-free implementations
+sacrifice parallelism.
 
-In this paper, C. Yang and J. Mellor-Crummey expose a new queue providing a
-wait-free guaranty and also delivering high performance.
+Linearizability...
 
+The use of atomic primitives such as Compare and Swap (CAS) is critical in
+designing Lock-free algorithm. To understand why, we must consider the consensus
+problem. A consensus is reached between $n$ threads if those $n$ threads can
+\textit{decide} on a value : each thread proposes one value to the others and
+then chooses one value. The consensus is reached if all threads decides the same
+value (consistency requirement) and if the common decision is one of the
+initially proposed value (validity requirement).
 
+CAS primitive has an infinite consensus number
+\cite{Herlihy:1991:WS:114005.102808} : it can solve the consensus problem for an
+infinite number of threads. CAS holds another important property which is
+universality. An object is universal for $n$ threads if and only if it has a
+consensus number greater or equal to $n$. It is possible to implement any
+concurrent object in a wait-free manner if and only if the operation system
+provides an universal object. Thus, CAS can be used to implement any arbitrary
+concurrent wait-free object for any number of threads.
 
-Problematic:
-
-we avoid the Compare and Swap retry problem by using Fetch and Fetch to find an index
-can fast-path slow-path works for non-blocking algorithm using Fetch and Add ?
+Unfortunately, the use of CAS on a variable shared by several threads can
+effectively reduce performance even under low contention (CAS retry problem
+\cite{Morrison:2013:FCQ:2517327.2442527}). In this paper, C. Yang and J.
+Mellor-Crummey expose a new queue that is wait-free, linearizable, and delivers
+high performance. They avoid common issues with past designs such as the CAS
+problem by also relying on a Fetch and Add primitive. They designed their
+wait-free queue using a methodology called fast-path-slow-path
+\cite{Kogan:2012:MCF:2370036.2145835}. It can transform any (?) non-blocking
+queue implemented with CAS to a wait-free one. They adapted it for queues also
+using Fetch and Add.

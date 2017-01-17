@@ -17,3 +17,8 @@ with double width compare and swap, which is not always available
 fast-path slow-path → with MS-queue as fast path
 
 Compare and swap problem: unbounded operation
+
+
+CAS retry problem : heavy contention = high probability of CAS failures, low
+scalability even with a low number of threads, use of fetch and add to get a
+free cell can solve this problem

@@ -1,7 +1,20 @@
 idée de preuve wait-free et linearizable
 
+
+---
+Memory reclamation is not easy because of ABA problem
+
 memory reclemation for system without garbage collector
 
 malloc is not non-blocking, own allocation mechanism or we allocate a pool of
 cells for each thread : ABA problem = double width CAS (not universaly
 available)
+
+cleanup retired segments
+update tail and head pointers
+visit threads in reserve order
+overhead ?
+thread failure ?
+
+---
+wait free proof

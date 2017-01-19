@@ -1,11 +1,41 @@
-idée de preuve wait-free et linearizable
+A basic obstruction-free queue is given in (*REF*). From this queue, the authors
+construct a wait-free queue by using the fast-path-slow-path methodology.
+
+$FAA(x, v)$ atomically reads the value stored in the $x$ variable, and
+increments it by one. $CAS(x, t, v)$ atomically reads the value stored in $x$,
+compares it to $t$ and, if $x$ is equal to $t$ (success), replaces the value of
+$x$ by $v$. \\
+
+\para{Basic queue} This queue is designed to be fast. It is neither wait-free or lock-free because
+it is proned to livelocking. As only one thread is guaranteed to progress, this
+queue is only obstruction-free. It uses a shared infinite array to store
+elements. We will see later how memory can be reclaimed. Two special values are
+reserved : $\bot$ (bottom) and $\top$ (top). $\bot$ stands for empty cells as
+the queue is initially filled with $\bot$. $\top$ stands for unusable cells.
+When one thread dequeues an element, he marks the cells with $\top$ to prevent
+other threads to enqueue an element in it.
+
+To enqueue an element, one thread try to find an available cell on the array, a
+cell marked with $\bot$. One cannot enqueue an element in a $\top$ marked cell
+because it could violate the FIFO property of the queue. To get an unique index
+on the array, they uses fetch-and-add to increment the shared tail pointer.
+Considering the pointer is shared by all threads, using compare-and-swap instead
+of fetch-and-add would result in lots of failures. After one thread is given an
+unique index, he needs to certify that the cell is empty. He then uses
+compared-and-swap to enqueue an element into the array. In case of
+compare-and-swap failure, redo the whole process until the element is enqueued.
+
+The dequeue operation works in a similar manner, one thread try to find either a
+cell filled with an element or with $\top$ by using fetch-and-add and a shared
+head pointer. If a thread stops on a $\top$ marked cell, the dequeue returns
+\texttt{EMPTY}.
 
 
----
+\para{Fast-path-slow-path}
+
+\para{Memory reclamation}
 Memory reclamation is not easy because of ABA problem
-
 memory reclemation for system without garbage collector
-
 malloc is not non-blocking, own allocation mechanism or we allocate a pool of
 cells for each thread : ABA problem = double width CAS (not universaly
 available)
@@ -16,5 +46,5 @@ visit threads in reserve order
 overhead ?
 thread failure ?
 
----
-wait free proof
+\para{Wait-free guaranty}
+idée de preuve wait-free et linearizable

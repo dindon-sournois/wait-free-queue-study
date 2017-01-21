@@ -1,6 +1,6 @@
 A basic obstruction-free queue is given in Listing \ref{lst:queue}. From this
 queue, the authors construct a wait-free queue by using the fast-path-slow-path
-methodology.
+methodology. This queue is similar to the base used in the LCRQ algorithm.
 
 $FAA(x, v)$ atomically reads the value stored in the $x$ variable, and
 increments it by $v$. $CAS(x, t, v)$ atomically reads the value stored in $x$,
@@ -36,8 +36,8 @@ the cells with $\top$ to prevent other threads to enqueue an element in it.
 To enqueue an element, one thread try to find an available cell on the array, a
 cell marked with $\bot$. One cannot enqueue an element in a $\top$ marked cell
 because it could violate the FIFO property of the queue. To get an unique index
-on the array, they uses fetch-and-add to increment the shared tail pointer.
-Considering the pointer is shared by all threads, using compare-and-swap instead
+on the array, they uses fetch-and-add to increment the shared tail reference.
+Considering the reference is shared by all threads, using compare-and-swap instead
 of fetch-and-add would result in lots of failures. After one thread is given an
 unique index, he needs to certify that the cell is empty. He then uses
 compared-and-swap to enqueue an element into the array. In case of
@@ -45,7 +45,7 @@ compare-and-swap failure, redo the whole process until the element is enqueued.
 
 The dequeue operation works in a similar manner, one thread try to find either a
 cell filled with an element or marked with $\top$ by using fetch-and-add on a
-shared head pointer. If a thread stops on a $\top$ marked cell, the dequeue
+shared head reference. If a thread stops on a $\top$ marked cell, the dequeue
 returns \texttt{EMPTY}.
 
 This queue is designed to be fast. Dequeue may always fail if queued values are
@@ -74,8 +74,8 @@ pending enqueue requests, and eventually help one request to complete. The
 enqueuer thread then keeps trying to enqueue the element until he or another
 succeeds.
 
-Threads are linked in a ring, they keep a pointer to a \textit{peer} to who they
-help operation to complete. Each time a thread successfully helps another
+Threads are linked in a ring, they keep a reference to a \textit{peer} to who
+they help operation to complete. Each time a thread successfully helps another
 thread, he updates his \textit{peer} to the next thread in the ring so that each
 thread happens to help every one at some point. \\
 

@@ -1,38 +1,39 @@
-
-Fetch and Add can fails (at hardware level)
-
 memory reclamation scheme proned to thread failures (unbounded memory leakage)
 DEBRA thread failure for memory reclamation
-
-FAA slower than LCRQ
-
-not clear if they tested the fast-path-slow-path methodology with MS-Queue as
-fast path, it would seem the be the best wait-free implementation queue at that
-time. because the number of failure of CAS isn't bounded for MS-queue, it is not
-clear that fpsp with ms-queue as fast path can't be faster than ms-queue
 
 they use a ? to get rid of inconsistent experimental results, however for real
 applications, thos inconsistences do exist
 
-they added memory reclamation system
-
 adding works to avoid long run scenarios (low cache miss) -> imporves perf on
 Haswell ?
 
+not clear if they tested the fast-path-slow-path methodology with
+MS-Queue as fast path, it would seem the be the best wait-free implementation
+queue at that time. because the number of failure of CAS isn't bounded for
+MS-queue, it is not clear that fpsp with ms-queue as fast path can't be faster
+than ms-queue
 
-Recent research have shown that some lock-free objects and even blocking objects
-can \textit{practically} be considered wait-free
+Recent research have suggested that some lock-free objects and even blocking
+objects can \textit{practically} be considered wait-free
 \cite{David:2016:CSD:2935764.2935774} \cite{Alistarh:2016:LCA:2997039.2903136}
 given how unlikely conflicts occurs. For example, for the queue presented in
 this overview, experimental results show that 99.97\% of the enqueues and at
 most 95.95\% of the dequeues are done with the fast-path only (with is
 lock-free).
 
-Fetch-and-add are not universally supported. For example, the Power, Sparc and
+Fetch-and-add are not universally supported. For example, the Power, SPARC and
 ARM processors doesn't provide a native fetch-and-add. While it can be emulated
 with load-linked/store-conditional primitive, the queue losses his wait-free
 property.
 
 When several fetch-and-add conflict on the same memory location, they must be
 treated in a starvation-free manner by the hardware if one wants to keep the
-wait-free property of the queue.
+wait-free property of the queue. Fetch-and-add may also fail the same way
+compare-and-swap fails but at hardware level, which blurs the difference between
+wait-free and lock-free.
+
+In their experiments, the authors use a microbenchmark, simulating enqueue and
+dequeue operations using only one fetch-and-add, that should serve as an upper
+bound for all fetch-and-add-based queue. On architecture where the fetch-and-add
+is natively available, this microbenchmark doesn't always perform better than
+the LCRQ (which uses fetch-and-swap and compare-and-swap).

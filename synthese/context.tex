@@ -1,48 +1,51 @@
-\para{MS-Queue} The MS-Queue from Michael M. M. and Scott M. L. is a classical
-simple lock-free queue implemented with only compare-and-swap as primitive
-\cite{Michael96simple}. Their queue is designed as a singly-linked list, with
-two references to the head and the tail of the queue. Their use compare-and-swap
-to add (or remove) an element to the queue and to move the head and tail
-reference. As a consequence, it is subject to the compare-and-swap retry
-problem. Even with a low number of threads, performance are drastically reduced
-under contention because of high probability of compare-and-swap failures.
+\para{MS-Queue} The MS-Queue from M. M. Michael and M. L. Scott is a classical
+simple lock-free queue implemented with only compare-and-swap as synchronisation
+primitive \cite{Michael96simple}. Their queue is designed as a singly-linked
+list, with two references to the head and the tail of the queue. Their use
+compare-and-swap to add (or remove) an element to the queue and to move the head
+and tail reference. As a consequence, it is subject to the compare-and-swap
+retry problem. Even with a low number of threads, performance are drastically
+reduced under contention because of high probability of compare-and-swap
+failures.
 
 The MS-Queue avoids the ABA problem by using double width compare-and-swap. Each
-compare-and-swap to an address also increments a counter associated with that
+compare-and-swap on an address also increments a counter associated with that
 address so that the comparison is done with one address and an integer
 \cite{Herlihy08} \cite{Michael96simple}. \\
 
 \para{Practical wait-free queue} One of the first implementation of a wait-free
-queue supporting multiples enqueuers and dequeuers was designed by Kogan A. and
-Petrank E. \cite{Kogan:2011:WQM:2038037.1941585}. This queue is based on the
-MS-Queue. Each operation is divided into three atomic steps, threads can help
+queue supporting multiples enqueuers and dequeuers was designed by A. Kogan and
+E. Petrank \cite{Kogan:2011:WQM:2038037.1941585}. This queue is based on the
+MS-Queue. Each operation is divided into three atomic steps. Threads can help
 each others to complete a step without letting the possibility for steps
 interleaving among the same type of operation (enqueue or dequeue). Because of
 the overhead of this helping mechanism, it doesn't perform as well as the
 MS-Queue. \\
 
-\para{Combining-based queue} The P-Sim queue (wait-free) and CC-Queue (blocking)
-from Fatourou P. and Kallimanis N. D. uses \textit{operation combining} to try
+\para{Combining-based queues} The P-Sim queue (wait-free) and CC-Queue (blocking)
+from P. Fatourou and N. D. Kallimanis uses \textit{operation combining} to try
 to achieve better scalability than compare-and-swap-based queue by reducing
 synchronisation cost \cite{Fatourou:2011:HWU:1989493.1989549}
-\cite{Fatourou:2012:RCS:2370036.2145849}. To do so, threads don't directly
-modify the queue but publish a request. A single thread browses a list of
-pending operations and applies them serially on the queue. While the CC-Queue
-performs better than the P-Sim queue, it is still a blocking object and, also
-because of the lack of parallelism, the CC-queue doesn't scale well. \\
+\cite{Fatourou:2012:RCS:2370036.2145849}.
 
-\para{$FAA$-based LCRQ} The LCRQ is a lock-free queue designed by Morrison A.
-and Afek Y. \cite{Morrison:2013:FCQ:2517327.2442527}. It is implemented as a
+To do so, threads don't directly modify the queue but publish a request. A
+single thread browses a list of pending operations and applies them serially on
+the queue. While the CC-Queue performs better than the P-Sim queue, it is still
+a blocking object and, also because of the lack of parallelism, the CC-queue
+doesn't scale well. \\
+
+\para{$FAA$-based LCRQ} The LCRQ is a lock-free queue designed by A. Morrison
+and Y. Afek \cite{Morrison:2013:FCQ:2517327.2442527}. It is implemented as a
 circular ring queue. Threads use fetch-and-add to get a cell index on the queue,
 enqueue and dequeue are then done with double width compare-and-swap, which is
 not universally available. However, by also relying on fetch-and-add, this queue
 avoids the compare-and-swap retry problem. \\
 
-\para{Fast-path-slow-path} The fast-path-slow-path methodology objective is to
-construct a wait-free algorithm from a lock-free one
-\cite{Kogan:2012:MCF:2370036.2145835}. This methodology relies on a
-compared-and-swap-based lock-free algorithm \textit{most} of the time
-(fast-path), and switch to a wait-free algorithm when too many compared-and-swap
-failures are encountered by using an helping mechanism (slow-path). It aims to
-achieve lock-free performance with a wait-free guaranty. They use the lock-free
-MS-queue as the fast path.
+\para{Fast-path-slow-path} Designed by A. Kogan and E. Petrank, the objective of
+the fast-path-slow-path methodology is to construct a wait-free algorithm from a
+lock-free one \cite{Kogan:2012:MCF:2370036.2145835}. The resulting algorithm
+relies on a compare-and-swap-based lock-free algorithm \textit{most} of the
+time (fast-path), and switch to a wait-free algorithm if too many
+compared-and-swap failures occurred by using an helping mechanism
+(slow-path). It aims to achieve lock-free performance with a wait-free guaranty.
+They experimented it with the lock-free MS-queue as the fast path.

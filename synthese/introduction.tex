@@ -1,56 +1,55 @@
 Fast concurrent data structures are necessary to exploit the power of multi-core
-processors and multiprocessors machine. To deliver high scalable performance,
-applications may need shared objects (data structures) whose operations are
-scalable. Each operations of an object (adding, removing, modifying an element)
-much perform \textit{reasonably} well even when the number of threads sharing an
+processors and multi-processors machine. To deliver high scalable performance,
+applications may need shared objects (data structures) with scalable operations.
+Each operation of an object (adding, removing, modifying an element) much
+perform \textit{reasonably} well even when the number of threads sharing an
 object is high.
 
 One way to construct concurrent data structures is by using an object with
-blocking operations. An example of such object would be a concurrent queue whose
-operations have been protected with mutual exclusion (locks). This approach is
-not scalable and it will lead to poor performance under high contention,
-especially if the application uses more software threads than hardware threads.
-Unexpected delay from one thread prevents the others to use the object. The
-source of the delay is multiple : operating system preemption, cache miss, page
-fault, etc. Therefore designing non-blocking objects is the topic of lots of
-past and ongoing researches. \\
+blocking operations. An example of said object would be a concurrent queue whose
+operations have been protected with mutual exclusion (locks). Unexpected delay
+from one thread prevents the others to use the object. The source of the delay
+is multiple : operating system preemption, cache miss, page fault, etc. Thus,
+this approach is not scalable and it may lead to poor performance under high
+contention, especially if the application uses more software threads than
+hardware threads. That's why designing non-blocking objects is the topic of lots
+of past and ongoing research. \\
 
-\para{Wait-free object} We define here levels of process guarantees
-
-on each operation of a non-blocking object \cite{Yang:2016:WQF:3016078.2851168}.
+\para{Wait-free object} We define here levels of \textit{process guarantees} on
+each operation of a non-blocking object \cite{Yang:2016:WQF:3016078.2851168}.
 Those are meant to predict how an object will behave under high contention. The
 strongest guaranty is wait-free, which means an operation will complete in a
 finite number of steps regardless of how many threads is accessing this object
 and at what speed. Lock-free operations complete in a finite number of steps
-only for \textit{some} threads while it may not be the case for the others.
-Obstruction-free is the weakest guaranty. Only one thread is guaranteed to
-complete an operation in a finite number of steps.
+only for \textit{some} threads. Obstruction-free is the weakest guaranty. Only
+\textit{one} thread is guaranteed to complete an operation in a finite number of
+steps.
 
 While an object can be wait-free, this doesn't mean it will enable the
-application to achieve high scalability. Actually, (*reference*) most past
-wait-free queue implementations perform worse than others lock-free or blocking
-queue. To achieve a wait-free guarantee, most wait-free implementations have to
-either sacrifice parallelism or linearizability. \\
+application to achieve high scalability. Actually, most past wait-free queue
+implementations perform worse than others lock-free or blocking queue. To
+achieve a wait-free guarantee, most wait-free implementations have to either
+sacrifice parallelism or linearizability. \\
 
 \para{Linearizability} Having multiple threads concurrently modifying a shared
 object must not leave this object (a queue for example) in an
 \textit{inconsistent} state. To ensure the designed object is correct, we need a
-correctness condition for shared objects. The authors choose linearizability for
-their design of concurrent queue. Each operation must appear to \textit{take
-effect} instantaneously from the point of view of other threads. The order of
-non-concurrent operations must also be preserved, regardless of when the
-operation started and ended \cite{Herlihy:1990:LCC:78969.78972}.
+\textit{safety condition} for shared objects. The authors choose linearizability
+for their design of concurrent queue. A sequence of operations is linearizable
+if each operation appears to "take effect" instantaneously from the point of
+view of other threads, regardless of when the operation started and returned.
+The order of non-concurrent operations must also be preserved
+\cite{Herlihy:1990:LCC:78969.78972}. The object is correct if every possible
+sequences are linearizable.
 
 An atomic operation or an operation protected by mutual exclusion is by
 definition linearizable. When the operation is not atomic, one must consider the
 point in time when changes made to the shared object become visible to the other
 threads.
 
-paragraphe sur coherence sequentiel ? \\
-
 \para{Memory reclamation} Memory management is an important part of designing a
 concurrent non-blocking algorithm. Garbage collection is not available in all
-languages and, even it exists, one may need to do his own memory management to
+languages. Even it exists, one may need to do his own memory management to
 be more efficient, especially if the garbage collection process is not lock-free
 or wait-free.
 
@@ -64,8 +63,9 @@ contention, it is proned to the ABA problem which may corrupt memory.
 The ABA problem occurs if one thread reads a shared address $A$, attempts to
 replace the value of this cell with a compare-and-swap ($CAS$) and succeeds when
 it should not. For example, if between the read and the comparison, another
-thread replaced $A$ to $B$, and then replaced $B$ to $A$ again, the
-compare-and-swap should fails.
+thread replaced the cell $A$ to $B$, and then replaced $B$ to $A$ again, the
+compare-and-swap may succeed under the assumption that the cell is still the
+same than before.
 
 One can also use other memory management implementations like \texttt{jemalloc},
 \texttt{TCMalloc}, or \texttt{Lockless}. \\
@@ -75,7 +75,7 @@ critical in designing Lock-free algorithm. To understand why, we must consider
 the consensus problem. A consensus is reached between $n$ threads if those $n$
 threads can \textit{decide} on a value : each thread proposes one value to the
 others and then chooses one value. The consensus is reached if all threads
-decides the same value (consistency requirement) and if the common decision is
+decide the same value (consistency requirement) and if the common decision is
 one of the initially proposed value (validity requirement).
 
 Compare-and-swap primitive has an infinite consensus number
@@ -92,9 +92,9 @@ load-linked/store-conditional. \\
 \para{Contribution} Unfortunately, the use of compare-and-swap on a variable
 shared by several threads can drastically reduce performance even under low
 contention (compare-and-swap retry problem
-\cite{Morrison:2013:FCQ:2517327.2442527}). In this paper, Yang C. and
-Mellor-Crummey J. expose a new queue that is wait-free, linearizable, and
-delivers high performance.
+\cite{Morrison:2013:FCQ:2517327.2442527}). In this paper, C. Yang and J.
+Mellor-Crummey expose a new queue that is wait-free, linearizable, and delivers
+high performance.
 
 They avoid common issues with past designs such as the compare-and-swap problem
 by also relying on a fetch-and-add primitive ($FAA$). Fetch-and-add has
@@ -102,6 +102,6 @@ consensus number two but is less expensive than compare-and-swap and cannot
 fail. They designed their wait-free queue using a methodology called
 fast-path-slow-path \cite{Kogan:2012:MCF:2370036.2145835}. It can transform
 non-blocking lock-free queue implemented with compare-and-swap primitive to a
-wait-free one. They adapted it for queues also using fetch-and-add. They also
-provide their own memory reclamation scheme which adds little overhead unlike
-previous work.
+wait-free one. They adapted it for queues also using fetch-and-add. They provide
+their own memory reclamation scheme which adds little overhead, unlike previous
+work.

@@ -1,41 +1,23 @@
+\para{MS-queue} The MS-queue \cite{Michael96simple} from is a classical simple
+lock-free queue implemented with only compare-and-swap as primitive. As a
+consequence, it is subject to the compare-and-swap retry problem. Even with a
+low number of threads, performance are drastically reduced under contention
+because of high probability of compare-and-swap failures.
 
+MS-queue avoids the ABA problem by using double width compare-and-swap. Each
+compare-and-swap to an address also increments a counter associated with that
+address so that the comparison is done with one address and an integer
+\cite{Herlihy08} \cite{Michael96simple}. \\
 
+\para{Practical wait-free queue} One of the first implementation of a wait-free
+queue with multiples enqueuers and dequeuers was designed . based on MS-Queue:
+overhead of helping mechanism \\
 
+\para{P-Sim queue} wait-free universal construction \\
 
+\para{CC-queue} blocking, better performance, combining \\
 
+\para{LCRQ} lock-free circular ring queue with Fetch and Add to get index, enqueue and
+dequeue with double width compare and swap, which is not always available \\
 
-
-
-
-
-
-
-
-
-
-
-
-fastest wait-free is slower than the fastest lock-free
-
-lock-free:
- - MS-Queue : CAS failures (with a reasonable number of threads)
-
-wait-free:
-- based on MS-Queue: overhead of helping mechanism
-- P-Sim, use Fetch and Add too
-
-blocking:
-- CC-queue: combining
-
-lock-free:
-- LCRQ: circular ring queue with Fetch and Add to get index, enqueue and dequeue
-with double width compare and swap, which is not always available
-
-fast-path slow-path → with MS-queue as fast path
-
-Compare and swap problem: unbounded operation
-
-
-CAS retry problem : heavy contention = high probability of CAS failures, low
-scalability even with a low number of threads, use of fetch and add to get a
-free cell can solve this problem
+\para{Fast-path slow-path} → with MS-queue as fast path

@@ -1,3 +1,21 @@
+experimental results show that 99.9\% enqueue don't go slow, and at most 96\%
+don't go slow path
+
 Fetch and Add can fails (at hardware level)
 
+memory reclamation scheme proned to thread failures (unbounded memory leakage)
 DEBRA thread failure for memory reclamation
+
+FAA slower than LCRQ
+
+not clear if they tested the fast-path-slow-path methodology with MS-queue as
+fast path, it would seem the be the best wait-free implementation queue at that
+time
+
+they use a ? to get rid of inconsistent experimental results, however for real
+applications, thos inconsistences do exist
+
+they added memory reclamation system
+
+adding works to avoid long run scenarios (low cache miss) -> imporves perf on
+Haswell ?

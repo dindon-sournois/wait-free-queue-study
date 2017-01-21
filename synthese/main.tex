@@ -1,91 +1,21 @@
-% *** Authors should verify (and, if needed, correct) their LaTeX system  ***
-% *** with the testflow diagnostic prior to trusting their LaTeX platform ***
-% *** with production work. The IEEE's font choices and paper sizes can   ***
-% *** trigger bugs that do not appear when using other class files.       ***                          ***
-% The testflow support page is at:
-% http://www.michaelshell.org/tex/testflow/
-
 \documentclass[10pt,journal,compsoc]{IEEEtran}
 
-% If IEEEtran.cls has not been installed into the LaTeX system files,
-% manually specify the path to it like:
-% \documentclass[10pt,journal,compsoc]{../sty/IEEEtran}
-
-% Some very useful LaTeX packages include:
-% (uncomment the ones you want to load)
-
-% \ifCLASSOPTIONcompsoc
-  % IEEE Computer Society needs nocompress option
-  % requires cite.sty v4.0 or later (November 2003)
-  % \usepackage[nocompress]{cite}
-% \else
-  % normal IEEE
-  % \usepackage{cite}
-% \fi
-
-% *** GRAPHICS RELATED PACKAGES ***
-%
-\ifCLASSINFOpdf
-  % \usepackage[pdftex]{graphicx}
-  % declare the path(s) where your graphic files are
-  % \graphicspath{{../pdf/}{../jpeg/}}
-  % and their extensions so you won't have to specify these with
-  % every instance of \includegraphics
-  % \DeclareGraphicsExtensions{.pdf,.jpeg,.png}
-\else
-  % or other class option (dvipsone, dvipdf, if not using dvips). graphicx
-  % will default to the driver specified in the system graphics.cfg if no
-  % driver is specified.
-  % \usepackage[dvips]{graphicx}
-  % declare the path(s) where your graphic files are
-  % \graphicspath{{../eps/}}
-  % and their extensions so you won't have to specify these with
-  % every instance of \includegraphics
-  % \DeclareGraphicsExtensions{.eps}
-\fi
-% graphicx was written by David Carlisle and Sebastian Rahtz. It is
-% required if you want graphics, photos, etc. graphicx.sty is already
-% installed on most LaTeX systems. The latest version and documentation
-% can be obtained at: 
-% http://www.ctan.org/pkg/graphicx
-% Another good source of documentation is "Using Imported Graphics in
-% LaTeX2e" by Keith Reckdahl which can be found at:
-% http://www.ctan.org/pkg/epslatex
-%
-% latex, and pdflatex in dvi mode, support graphics in encapsulated
-% postscript (.eps) format. pdflatex in pdf mode supports graphics
-% in .pdf, .jpeg, .png and .mps (metapost) formats. Users should ensure
-% that all non-photo figures use a vector format (.eps, .pdf, .mps) and
-% not a bitmapped formats (.jpeg, .png). The IEEE frowns on bitmapped formats
-% which can result in "jaggedy"/blurry rendering of lines and letters as
-% well as large increases in file sizes.
-%
-% You can find documentation about the pdfTeX application at:
-% http://www.tug.org/applications/pdftex
 
 \hyphenation{op-tical net-works semi-conduc-tor}
 
 \usepackage[backend=bibtex]{biblatex}
-% \usepackage{csquotes}
 \addbibresource{bibliography.bib}
+\usepackage{listings}
+\usepackage{graphicx}
 
 \begin{document}
-%
-% paper title
-% Titles are generally capitalized except for words such as a, an, and, as,
-% at, but, by, for, in, nor, of, on, or, the, to and up, which are usually
-% not capitalized unless they are the first or last word of the title.
-% Linebreaks \\ can be used within to get better formatting as desired.
-% Do not put math or special symbols in the title.
 
-% Lecture d'article - Sythèse -
 \title{Overview - ``A Wait-free Queue as Fast as Fetch-and-Add''}
 
 \author{Loris~Lucido\\\small{\textit{Author:} Chaoran~Yang,
         John Mellor-Crummey}}% <-this % stops a space}
 
 \IEEEtitleabstractindextext{%
-% Note that keywords are not normally used for peerreview papers.
 \begin{IEEEkeywords}
 non-blocking queue, wait-free, fast-path-slow-path
 \end{IEEEkeywords}}
@@ -95,7 +25,7 @@ non-blocking queue, wait-free, fast-path-slow-path
 \IEEEdisplaynontitleabstractindextext
 \IEEEpeerreviewmaketitle
 
-\newcommand{\para}[1]{\textbf{\textit{#1}}\hspace{3 mm}}
+\newcommand{\para}[1]{\textbf{\textit{#1}}\hspace{2 mm}}
 
 \section{Introduction}\label{sec:introduction}
 \input{introduction.tex}

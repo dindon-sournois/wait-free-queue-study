@@ -1,5 +1,5 @@
 Fast concurrent data structures are necessary to exploit the power of multi-core
-processors and multi-processors machine. To deliver high scalable performance,
+processors and multi-processor machines. To deliver high scalable performance,
 applications may need shared objects (data structures) with scalable operations.
 Each operation of an object (adding, removing, modifying an element) much
 perform \textit{reasonably} well even when the number of threads sharing an
@@ -8,20 +8,20 @@ object is high.
 One way to construct concurrent data structures is by using an object with
 blocking operations. An example of said object would be a concurrent queue whose
 operations have been protected with mutual exclusion (locks). Unexpected delay
-from one thread prevents the others to use the object. The source of the delay
-is multiple : operating system preemption, cache miss, page fault, etc. Thus,
-this approach is not scalable and it may lead to poor performance under high
-contention, especially if the application uses more software threads than
+from one thread prevents the others from using the object. The source of the
+delay is multiple: operating system preemption, cache miss, page fault, etc.
+Thus, this approach is not scalable and it may lead to poor performance under
+high contention, especially if the application uses more software threads than
 hardware threads. That's why designing non-blocking objects is the topic of lots
 of past and ongoing research. \\
 
 \para{Wait-free object} We define here levels of \textit{process guarantees} on
 each operation of a non-blocking object \cite{Yang:2016:WQF:3016078.2851168}.
 Those are meant to predict how an object will behave under high contention. The
-strongest guaranty is wait-free, which means an operation will complete in a
-finite number of steps regardless of how many threads is accessing this object
+strongest guarantee is wait-free, which means an operation will complete in a
+finite number of steps regardless of how many threads are accessing this object
 and at what speed. Lock-free operations complete in a finite number of steps
-only for \textit{some} threads. Obstruction-free is the weakest guaranty. Only
+only for \textit{some} threads. Obstruction-free is the weakest guarantee. Only
 \textit{one} thread is guaranteed to complete an operation in a finite number of
 steps.
 
@@ -45,11 +45,11 @@ sequences are linearizable.
 An atomic operation or an operation protected by mutual exclusion is by
 definition linearizable. When the operation is not atomic, one must consider the
 point in time when changes made to the shared object become visible to the other
-threads.
+threads. \\
 
 \para{Memory reclamation} Memory management is an important part of designing a
 concurrent non-blocking algorithm. Garbage collection is not available in all
-languages. Even it exists, one may need to do his own memory management to
+languages. Even if exists, one may need to do one's own memory management to
 be more efficient, especially if the garbage collection process is not lock-free
 or wait-free.
 
@@ -58,14 +58,14 @@ of the queue because \texttt{malloc} uses mutual exclusion to manage memory. One
 solution is to have each thread manages a pool of pre-allocated cells
 \cite{Herlihy08}. Enqueue operation take one cell from the pool, dequeue
 operation put the cell back into the pool. While this solution avoids lock
-contention, it is proned to the ABA problem which may corrupt memory.
+contention, it is prone to the ABA problem which may corrupt memory.
 
 The ABA problem occurs if one thread reads a shared address $A$, attempts to
 replace the value of this cell with a compare-and-swap ($CAS$) and succeeds when
 it should not. For example, if between the read and the comparison, another
 thread replaced the cell $A$ to $B$, and then replaced $B$ to $A$ again, the
 compare-and-swap may succeed under the assumption that the cell is still the
-same than before.
+same as before.
 
 One can also use other memory management implementations like \texttt{jemalloc},
 \texttt{TCMalloc}, or \texttt{Lockless}. \\
@@ -73,18 +73,18 @@ One can also use other memory management implementations like \texttt{jemalloc},
 \para{Consensus number} The use of atomic primitives such as compare-and-swap is
 critical in designing Lock-free algorithm. To understand why, we must consider
 the consensus problem. A consensus is reached between $n$ threads if those $n$
-threads can \textit{decide} on a value : each thread proposes one value to the
+threads can \textit{decide} on a value: each thread proposes one value to the
 others and then chooses one value. The consensus is reached if all threads
-decide the same value (consistency requirement) and if the common decision is
+decide on the same value (consistency requirement) and if the common decision is
 one of the initially proposed value (validity requirement).
 
 Compare-and-swap primitive has an infinite consensus number
-\cite{Herlihy:1991:WS:114005.102808} : it can solve the consensus problem for an
+\cite{Herlihy:1991:WS:114005.102808}: it can solve the consensus problem for an
 infinite number of threads. Compare-and-swap holds another important property
 which is universality. An object is universal for $n$ threads if and only if it
 has a consensus number greater or equal to $n$. It is possible to implement any
 concurrent object in a wait-free manner if and only if the operation system
-provides an universal object. Thus, compare-and-swap can be used to implement
+provides a universal object. Thus, compare-and-swap can be used to implement
 any arbitrary concurrent wait-free object for any number of threads. This
 statement holds for other infinite consensus number primitive like
 load-linked/store-conditional. \\

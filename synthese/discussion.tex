@@ -22,26 +22,26 @@ good as the MS-Queue. Because the number of failures of compare-and-swap isn't
 bounded for MS-Queue, it is not clear that this wait-free queue can't be faster,
 under heavy contention, than the original MS-Queue.
 
-Recent research have suggested that some lock-free objects
+Recent research has suggested that some lock-free objects
 \cite{Alistarh:2016:LCA:2997039.2903136} and even blocking objects
 \cite{David:2016:CSD:2935764.2935774} can \textit{practically} be considered
 wait-free given how unlikely conflicts occurs. For example, for the queue
 presented in this overview, experimental results show that 99.97\% of the
 enqueues and at most 95.95\% of the dequeues are done with only one try on the
-fast-path (which is lock-free). Those research emphasise the idea that
+fast-path (which is lock-free). The research emphasises the idea that
 applications needing a state-of-the-art wait-free queue instead of a simpler,
 faster obstruction-free or lock-free queue are quite rare.
 
 Fetch-and-add are not universally supported. For example, the Power, SPARC and
 ARM processors don't provide a native fetch-and-add primitive. While it can be
-emulated with load-linked/store-conditional primitive, the queue losses his
+emulated with load-linked/store-conditional primitive, the queue losses its
 wait-free property.
 
-When several fetch-and-add conflict on the same memory location, they must be
-treated in a starvation-free manner by the hardware to keep the wait-free
-property of the queue. Fetch-and-add may also fail the same way compare-and-swap
-fails but at hardware level, which blurs the difference between wait-free
-fetch-and-add-based queue and lock-free queue.
+Fetch-and-add may fail in a similar way as compare-and-swap fails but at
+hardware level which blurs the difference between wait-free fetch-and-add-based
+queue and lock-free queue. When several fetch-and-add conflict on the same
+memory location, they must be treated in a starvation-free manner by the
+hardware to keep the wait-free property of the queue.
 
 In their experiments, the authors use a microbenchmark, simulating enqueue and
 dequeue operations using only one fetch-and-add. It should serve as an upper

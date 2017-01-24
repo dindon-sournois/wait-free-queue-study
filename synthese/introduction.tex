@@ -13,7 +13,7 @@ delay is multiple: operating system preemption, cache miss, page fault, etc.
 Thus, this approach is not scalable and it may lead to poor performance under
 high contention, especially if the application uses more software threads than
 hardware threads. That's why designing non-blocking objects is the topic of lots
-of past and ongoing research. \\
+of past and ongoing research. \medskip
 
 \para{Wait-free object} We define here levels of \textit{process guarantees} on
 each operation of a non-blocking object \cite{Yang:2016:WQF:3016078.2851168}.
@@ -29,7 +29,7 @@ While an object can be wait-free, this doesn't mean it will enable the
 application to achieve high scalability. Actually, most past wait-free queue
 implementations perform worse than others lock-free or blocking queue. To
 achieve a wait-free guarantee, most wait-free implementations have to sacrifice
-parallelism. \\
+parallelism. \medskip
 
 \para{Linearizability} Having multiple threads concurrently modifying a shared
 object must not leave this object (a queue for example) in an
@@ -45,7 +45,7 @@ sequences are linearizable.
 An atomic operation or an operation protected by mutual exclusion is by
 definition linearizable. When the operation is not atomic, one must consider the
 point in time when changes made to the shared object become visible to the other
-threads. \\
+threads. \medskip
 
 \para{Memory reclamation} Memory management is an important part of designing a
 concurrent non-blocking algorithm. Garbage collection is not available in all
@@ -68,7 +68,7 @@ compare-and-swap may succeed under the assumption that the cell is still the
 same as before.
 
 One can also use other memory management implementations like \texttt{jemalloc},
-\texttt{TCMalloc}, or \texttt{Lockless}. \\
+\texttt{TCMalloc}, or \texttt{Lockless}. \medskip
 
 \para{Consensus number} The use of atomic primitives such as compare-and-swap is
 critical in designing Lock-free algorithm. To understand why, we must consider
@@ -83,11 +83,11 @@ Compare-and-swap primitive has an infinite consensus number
 infinite number of threads. Compare-and-swap holds another important property
 which is universality. An object is universal for $n$ threads if and only if it
 has a consensus number greater or equal to $n$. It is possible to implement any
-concurrent object in a wait-free manner if and only if the operation system
-provides a universal object. Thus, compare-and-swap can be used to implement
-any arbitrary concurrent wait-free object for any number of threads. This
-statement holds for other infinite consensus number primitive like
-load-linked/store-conditional. \\
+concurrent object in a wait-free manner if and only if the operating system
+provides a universal object. Thus, compare-and-swap can be used to implement any
+arbitrary concurrent wait-free object for any number of threads. This statement
+holds for other infinite consensus number primitive like
+load-linked/store-conditional. \medskip
 
 \para{Their Contribution} Unfortunately, the use of compare-and-swap on a variable
 shared by several threads can drastically reduce performance even under low

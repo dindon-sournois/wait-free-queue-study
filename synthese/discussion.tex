@@ -7,12 +7,30 @@
 % adding works to avoid long run scenarios (low cache miss) -> imporves perf on
 % Haswell ?
 
-The authors experimented on several architectures and evaluated the MS-Queue
-(lock-free), CC-Queue (blocking), LCRQ (lock-free) and their design (wait-free).
-Their wait-free queue outperforms all tested designs except the CC-Queue when
-run with only one thread. With several threads, their design performance is
-close to the lock-free LCRQ design. Their memory reclamation scheme adds no
-overhead on x86 architecture, which is unprecedented.
+The authors experimented on several architectures. Some of their experiments are
+shown figure \ref{fig:courbe}. They evaluated the MS-Queue (lock-free), CC-Queue
+(blocking), LCRQ (lock-free) and their wait-free design named WF-0 (one try on
+the fast-path) and WF-10 (10 tries on the fast-path). They also evaluated a
+microbenchmark, simulating enqueue and dequeue operations using only one
+fetch-and-add. It should serve as an upper bound for any fetch-and-add-based
+queue.
+
+Their wait-free queue outperforms all tested designs when run with only one
+thread. With several threads, their design performance is close to the lock-free
+LCRQ design. Their memory reclamation scheme adds no overhead on x86
+architecture, which is unprecedented.
+
+\begin{figure}
+    \caption{
+    Throughput of different queues. In each iteration a thread decides uniformly
+    at random to execute an enqueue or dequeue with equal odds. The benchmark
+    executes $10^7$ operations partitioned evenly among all threads. \char`\^:
+    executions that involve multiple processors.
+    \cite{Yang:2016:WQF:3016078.2851168}}
+    \label{fig:courbe}
+    \center
+    \includegraphics[width=1\linewidth]{img/courbe.pdf}
+\end{figure}
 
 In their experiments, the authors haven't compared their queue to another
 wait-free queue constructed with the fast-path-slow-path methodology like the
@@ -28,24 +46,22 @@ Recent research has suggested that some lock-free objects
 wait-free given how unlikely conflicts occurs. For example, for the queue
 presented in this overview, experimental results show that 99.97\% of the
 enqueues and at most 95.95\% of the dequeues are done with only one try on the
-fast-path (which is lock-free). The research emphasises the idea that
-applications needing a state-of-the-art wait-free queue instead of a simpler,
-faster obstruction-free or lock-free queue are quite rare.
+fast-path (which is obstruction-free). I believe the research emphasises the
+idea that applications needing a state-of-the-art wait-free queue instead of a
+simpler, faster obstruction-free or lock-free queue are quite rare.
 
-Fetch-and-add are not universally supported. For example, the Power, SPARC and
-ARM processors don't provide a native fetch-and-add primitive. While it can be
-emulated with load-linked/store-conditional primitive, the queue losses its
-wait-free property.
+The authors remind us that fetch-and-add are not universally supported. For
+example, the Power, SPARC and ARM processors don't provide a native
+fetch-and-add primitive. While it can be emulated with
+load-linked/store-conditional primitive, the queue loses its wait-free property.
 
 Fetch-and-add may fail in a similar way as compare-and-swap fails but at
 hardware level which blurs the difference between wait-free fetch-and-add-based
 queue and lock-free queue. When several fetch-and-add conflict on the same
-memory location, they must be treated in a starvation-free manner by the
-hardware to keep the wait-free property of the queue.
+memory location, I postulate that they must be treated in a starvation-free
+manner by the hardware to keep the wait-free property of the queue.
 
-In their experiments, the authors use a microbenchmark, simulating enqueue and
-dequeue operations using only one fetch-and-add. It should serve as an upper
-bound for all fetch-and-add-based queue. On architecture where the fetch-and-add
-is natively available, this microbenchmark doesn't always perform better than
-the LCRQ, which uses fetch-and-swap and compare-and-swap. This makes us
-reconsider the effectiveness and wait-free property of fetch-and-add.
+On architecture where the fetch-and-add is natively available, the fetch-and-add
+microbenchmark doesn't always perform better than the LCRQ which uses
+fetch-and-swap and compare-and-swap, as show in figure \ref{fig:courbe}. This
+makes me reconsider the effectiveness and wait-free property of fetch-and-add.

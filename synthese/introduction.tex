@@ -28,15 +28,15 @@ steps.
 While an object can be wait-free, this doesn't mean it will enable the
 application to achieve high scalability. Actually, most past wait-free queue
 implementations perform worse than others lock-free or blocking queue. To
-achieve a wait-free guarantee, most wait-free implementations have to either
-sacrifice parallelism or linearizability. \\
+achieve a wait-free guarantee, most wait-free implementations have to sacrifice
+parallelism. \\
 
 \para{Linearizability} Having multiple threads concurrently modifying a shared
 object must not leave this object (a queue for example) in an
 \textit{inconsistent} state. To ensure the designed object is correct, we need a
 \textit{safety condition} for shared objects. The authors choose linearizability
 for their design of concurrent queue. A sequence of operations is linearizable
-if each operation appears to "take effect" instantaneously from the point of
+if, each operation appears to "take effect" instantaneously from the point of
 view of other threads, regardless of when the operation started and returned.
 The order of non-concurrent operations must also be preserved
 \cite{Herlihy:1990:LCC:78969.78972}. The object is correct if every possible
@@ -56,8 +56,8 @@ or wait-free.
 The use of \texttt{malloc}, for example, may also violate the wait-free property
 of the queue because \texttt{malloc} uses mutual exclusion to manage memory. One
 solution is to have each thread manages a pool of pre-allocated cells
-\cite{Herlihy08}. Enqueue operation take one cell from the pool, dequeue
-operation put the cell back into the pool. While this solution avoids lock
+\cite{Herlihy08}. Enqueue operations take one cell from the pool, dequeue
+operations put the cell back into the pool. While this solution avoids lock
 contention, it is prone to the ABA problem which may corrupt memory.
 
 The ABA problem occurs if one thread reads a shared address $A$, attempts to
@@ -89,7 +89,7 @@ any arbitrary concurrent wait-free object for any number of threads. This
 statement holds for other infinite consensus number primitive like
 load-linked/store-conditional. \\
 
-\para{Contribution} Unfortunately, the use of compare-and-swap on a variable
+\para{Their Contribution} Unfortunately, the use of compare-and-swap on a variable
 shared by several threads can drastically reduce performance even under low
 contention (compare-and-swap retry problem
 \cite{Morrison:2013:FCQ:2517327.2442527}). In this paper, C. Yang and J.
@@ -98,10 +98,9 @@ high performance.
 
 They avoid common issues with past designs such as the compare-and-swap problem
 by also relying on a fetch-and-add primitive ($FAA$). Fetch-and-add has
-consensus number two but is less expensive than compare-and-swap and cannot
-fail. They designed their wait-free queue using a methodology called
-fast-path-slow-path \cite{Kogan:2012:MCF:2370036.2145835}. It can transform
-non-blocking lock-free queue implemented with compare-and-swap primitive to a
-wait-free one. They adapted it for queues also using fetch-and-add. They provide
-their own memory reclamation scheme which adds little overhead, unlike previous
-work.
+consensus number two but is less expensive than compare-and-swap. They designed
+their wait-free queue using a methodology called fast-path-slow-path
+\cite{Kogan:2012:MCF:2370036.2145835}. It can transform lock-free queues
+implemented with compare-and-swap primitive into a wait-free one. They adapted
+it for queues also using fetch-and-add. They provide their own memory
+reclamation scheme which adds little overhead, unlike previous work.

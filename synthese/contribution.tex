@@ -1,11 +1,13 @@
-A basic obstruction-free queue is given in Listing \ref{lst:queue}. From this
-queue, the authors construct a wait-free queue by using the fast-path-slow-path
-methodology. This queue is similar to the base used in the LCRQ algorithm.
+The authors used a basic obstruction-free queue as a base. It is given in
+Listing \ref{lst:queue}. From this queue, the authors construct a wait-free
+queue by using the fast-path-slow-path methodology. This queue is similar to the
+base used in the LCRQ algorithm.
 
-$FAA(x, v)$ atomically reads the value stored in the $x$ variable, and
-increments it by $v$. $CAS(x, t, v)$ atomically reads the value stored in $x$,
-compares it to $t$ and, if $x$ is equal to $t$ (success), replaces the value of
-$x$ by $v$. $CAS$ returns whether it has successfully replaced the value or not.
+$FAA(x, v)$ atomically reads the value stored in the $x$ variable, increments it
+by $v$ and returns the $x$ value pre-incrementation. $CAS(x, t, v)$ atomically
+reads the value stored in $x$, compares it to $t$ and, if $x$ is equal to $t$
+(success), replaces the value of $x$ by $v$. $CAS$ returns whether it has
+successfully replaced the value or not.
 
 \begin{lstlisting}[mathescape,
                    frame=single,
@@ -21,8 +23,8 @@ enqueue(x: var) {
 }
 dequeue(x: var) {
   do h := FAA(&H, 1);
-  while (!CAS(&Q[h], $\bot$, $\top$) and T > h);
-  return (Q[h] == T ? EMPTY : Q[h]);
+  while (CAS(&Q[h], $\bot$, $\top$) and T > h);
+  return (Q[h] == $\top$ ? EMPTY : Q[h]);
 }
 \end{lstlisting}
 
@@ -40,7 +42,7 @@ on the array, one thread uses fetch-and-add to increment the shared tail
 reference. Considering the reference is shared by all threads, using
 compare-and-swap instead of fetch-and-add would result in lots of failures.
 After one thread is given a unique index, it needs to certify that the cell is
-empty. He then uses compared-and-swap to enqueue an element into the array. In
+empty. It thus uses compared-and-swap to enqueue an element into the array. In
 the event of compare-and-swap failure, the thread redoes the whole process until
 the element is enqueued.
 
@@ -87,11 +89,11 @@ Because the tail and head pointers are never decremented, segments no longer in
 use need to be freed.
 
 After one thread dequeues an element, the thread tries to reclaim memory from
-unused segments. They use compare-and-swap to achieve mutual exclusion so that
-if several threads try to reclaim memory, only one should succeed. Unused
-segments are segments filled with $\top$ marked cells. Each thread keeps a
-reference to its currently used segment. The \textit{cleaner} thread ensures
-that no thread keeps a reference to a segment about to be freed and changes it
+unused segments. Unused segments are segments filled with $\top$ marked cells.
+They use compare-and-swap to achieve mutual exclusion so that if several threads
+try to reclaim memory, only one should succeed. Each thread keeps a reference to
+its currently used segment. The \textit{cleaner} thread ensures that no thread
+keeps a reference to a segment about to be freed and changes it
 if needed. \\
 
 \para{Wait-free guaranty} The number of tries on the lock-free fast-past is

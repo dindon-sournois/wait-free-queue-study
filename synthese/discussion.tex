@@ -15,7 +15,7 @@ microbenchmark, simulating enqueue and dequeue operations using only one
 fetch-and-add. It should serve as an upper bound for any fetch-and-add-based
 queue.
 
-Their wait-free queue outperforms all tested designs when run with only one
+Their wait-free queue outperforms most tested designs when run with only one
 thread. With several threads, their design performance is close to the lock-free
 LCRQ design. Their memory reclamation scheme adds no overhead on x86
 architecture, which is unprecedented.

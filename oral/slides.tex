@@ -1,0 +1,144 @@
+% Permission is granted to copy, distribute and/or modify this
+% document under the terms of the Creative Common by-nc-sa License
+% version 3.0 (CC BY-NC-SA 3.0). A copy of the license can be found at
+% http://creativecommons.org/licenses/by-nc-sa/3.0/legalcode.
+
+\documentclass[10pt,a4paper]{beamer}
+\usepackage[french]{babel}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{UBdx}
+\usepackage{graphicx}
+\usepackage{datetime}
+\usepackage{listings}
+
+\newdate{date}{30}{01}{2017}
+
+\title{``A Wait-free Queue as Fast as Fetch-and-Add''.}
+\subtitle{Soutenance}
+
+\author[L. Lucido]{Loris~Lucido\\\small{\textit{Authors:} Chaoran~Yang,
+        John Mellor-Crummey}\\[-.25em]}
+
+\institute[IR]{Lecture d'articles}
+
+\date{\displaydate{date}}
+
+\begin{document}
+
+\begin{frame}
+  \vspace{3.5em}
+  \titlepage
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \frametitle{Progress guarantee}
+  Blocking object $\rightarrow$ unexpected delays from the Operating System
+  block every threads. \center \vfill
+  \begin{tabular}{|l|c|}\hline
+    Progress guarantee & Number of threads guaranteed to make progress \\\hline
+    Obstruction-free & $1$ \\
+    Lock-free & $>1$ \\
+    Wait-free & $N$ \\\hline
+  \end{tabular}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Atomic primitives}
+  \newtheorem{faa}[theorem]{Fetch-and-Add}
+  \newtheorem{cas}[theorem]{Compare-and-Swap}
+  \begin{faa}
+    $FAA(x, v)$ returns the value of $x$ and increments it by $v$
+  \end{faa}
+  \vfill
+  \begin{cas}
+    $CAS(x,t,v)$ replaces $x$ by $v$ if $x$ equals $t$
+  \end{cas}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Related works - queues}
+  \small
+  \begin{tabular}{|l|l|l|l|l|l|}\hline
+    Queue & Progress & Primitive & Technique & Performance & Author \\\hline
+    MS-Queue & Lock-free & CAS & \multicolumn{1}{|c|}{-} & CAS retry & M. M. Michael, \\
+    & & & & & L. Scott \\\hline
+    CC-queue & Blocking & SWAP & Combining & Blocking & P. Fatourou, \\
+    & & & & & N. D. Kallimanis \\\hline
+    LCRQ & Lock-free & FAA and & FAA index & Fast & A. Morrison, \\
+    & & CAS & & & Y. Afek \\\hline
+    MS-queue & Wait-free & CAS & Fast-path- & CAS retry & A. Kogan,\\
+    Wait-free ver. & & & slow-path & & E. Petrank \\\hline
+  \end{tabular}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Problematic}
+  \large Can an \textbf{obstruction-free/lock-free} queue using
+  \textbf{fetch-and-add} can be transformed to a \textbf{wait-free} queue using
+  the \textbf{fast-path-slow-path} methodology ?
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Obstruction-free queue}
+\begin{lstlisting}[mathescape,
+                   frame=single,
+                   caption={An obstruction-free queue using an infinite array.},
+                   label={lst:queue},
+                   language=C]
+$\top$: invalid cell
+$\bot$: empty cell
+enqueue(x: var) {
+  do t := FAA(&Tail, 1); 
+  while (!CAS(&Queue[t], $\bot$, x));
+}
+dequeue(x: var) {
+  do h := FAA(&Head, 1);
+  while (CAS(&Queue[h], $\bot$, $\top$) and Tail > h);
+  return (Queue[h] == $\top$ ? EMPTY : Queue[h]);
+}
+\end{lstlisting}
+  % algo en live, éventuellement l'algo sur la gauche pendant le live
+  % 2 simples scénario (enqueue dequeue / livelock)
+\end{frame}
+
+\begin{frame}
+  \frametitle{Fast-path-slow-path methodology}
+  \center
+  \includegraphics[scale=0.8]{../synthese/img/fpsp.pdf}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Results}
+  \center
+  \includegraphics[scale=1.3]{../synthese/img/courbe.pdf}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Discussions}
+  \begin{itemize}
+  \item[] Some lock-free/blocking objects are \textit{practically} wait-free.
+    \medskip
+  \begin{itemize}
+  \item 99.97\% enqueue done in one try on fast-path \medskip
+  \item 95.95\% dequeue done in one try on fast-path
+  \end{itemize}
+  \vfill
+\item[] Is fetch-and-add implemented in a starvation-free manner by the hardware
+  ?
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Conclusion}
+  \begin{itemize}
+  \item First wait-free queue with performance as good as Lock-free queue \vfill
+  \item Design complexity increased for wait-free queue \vfill
+  \item Low probability of the worst-case scenario (slow-path)
+\end{itemize}
+\end{frame}
+
+\end{document}

@@ -37,22 +37,31 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}
-  \frametitle{Progress guarantee}
+  \frametitle{Progress guarantee of non-blocking object.}
   Blocking queue $\rightarrow$ unexpected delays from the Operating System
   can block every threads. \center \vfill
   \newtheorem{progress}[theorem]{Progress Guarantee}
   \begin{progress}
     \center
-    An operation is guaranteed to end in a finite number of steps for\ldots
     \begin{columns}
-      \begin{column}{0.5\textwidth}
+      \begin{column}{0.3\textwidth}
+      \end{column}
+      \begin{column}{0.7\textwidth}
+        \begin{itemize}
+        \item[] An operation is guaranteed to end in a finite number of steps for\ldots
+        \end{itemize}
+      \end{column}
+    \end{columns}
+    \medskip
+    \begin{columns}
+      \begin{column}{0.3\textwidth}
         \begin{itemize}
         \item Obstruction-free
         \item Lock-free
         \item Wait-free
         \end{itemize}
       \end{column}
-      \begin{column}{0.5\textwidth}
+      \begin{column}{0.7\textwidth}
         \begin{itemize}
         \item[] 1 thread only (in isolation)
         \item[] at least 2 threads
@@ -64,7 +73,7 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Atomic primitives}
+  \frametitle{Implementation - Atomic primitives}
   \newtheorem{faa}[theorem]{Fetch-and-Add}
   \newtheorem{cas}[theorem]{Compare-and-Swap}
   \begin{faa}
@@ -145,7 +154,9 @@ dequeue(x: var) {
 \begin{frame}
   \frametitle{Fast-path-slow-path methodology}
   \center
-  \includegraphics[scale=0.8]{../synthese/img/fpsp.pdf}
+  Transform lock-free/obstruction-free queue into wait-free queue
+  \vfill
+  \includegraphics[scale=0.7]{../synthese/img/fpsp.pdf}
 \end{frame}
 
 \begin{frame}

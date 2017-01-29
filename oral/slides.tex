@@ -38,12 +38,25 @@
   \frametitle{Progress guarantee}
   Blocking object $\rightarrow$ unexpected delays from the Operating System
   block every threads. \center \vfill
-  \begin{tabular}{|l|c|}\hline
-    Progress guarantee & Number of threads guaranteed to make progress \\\hline
-    Obstruction-free & $1$ \\
-    Lock-free & $>1$ \\
-    Wait-free & $N$ \\\hline
-  \end{tabular}
+  \newtheorem{progress}[theorem]{Progress Guarantee}
+  \begin{progress}[Number of threads guaranteed to make progress]
+    \begin{columns}
+      \begin{column}{0.5\textwidth}
+        \begin{itemize}
+        \item Obstruction-free
+        \item Lock-free
+        \item Wait-free
+        \end{itemize}
+      \end{column}
+      \begin{column}{0.5\textwidth}
+        \begin{itemize}
+        \item[] 1 only
+        \item[] at least 2
+        \item[] all threads
+        \end{itemize}
+      \end{column}
+    \end{columns}
+  \end{progress}
 \end{frame}
 
 \begin{frame}
@@ -84,9 +97,11 @@
 
 \begin{frame}[fragile]
   \frametitle{Obstruction-free queue}
+  \theoremstyle{example}
+  \newtheorem{algo}[theorem]{An obstruction-free queue using an infinite array.}
+  \begin{algo}
 \begin{lstlisting}[mathescape,
                    frame=single,
-                   caption={An obstruction-free queue using an infinite array.},
                    label={lst:queue},
                    language=C]
 $\top$: invalid cell
@@ -101,6 +116,7 @@ dequeue(x: var) {
   return (Queue[h] == $\top$ ? EMPTY : Queue[h]);
 }
 \end{lstlisting}
+  \end{algo}
   % algo en live, éventuellement l'algo sur la gauche pendant le live
   % 2 simples scénario (enqueue dequeue / livelock)
 \end{frame}

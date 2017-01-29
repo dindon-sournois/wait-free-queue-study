@@ -54,9 +54,9 @@
       \end{column}
       \begin{column}{0.5\textwidth}
         \begin{itemize}
-        \item[] 1 thread (in isolation)
+        \item[] 1 thread only (in isolation)
         \item[] at least 2 threads
-        \item[] all threads
+        \item[] any number of threads
         \end{itemize}
       \end{column}
     \end{columns}
@@ -83,12 +83,12 @@
     Queue & Progress & Primitive & Technique & Performance & Author \\\hline
     MS-Queue & Lock-free & CAS & \multicolumn{1}{|c|}{-} & CAS retry & M. M. Michael, \\
     & & & & & L. Scott \\\hline
-    CC-queue & Blocking & SWAP & Combining & Blocking & P. Fatourou, \\
-    & & & & & N. D. Kallimanis \\\hline
     LCRQ & Lock-free & FAA and & FAA index & Fast & A. Morrison, \\
     & & CAS & & & Y. Afek \\\hline
     MS-queue & Wait-free & CAS & Fast-path- & CAS retry & A. Kogan,\\
     Wait-free ver. & & & slow-path & & E. Petrank \\\hline
+    CC-queue & Blocking & SWAP & Combining & Blocking & P. Fatourou, \\
+    & & & & & N. D. Kallimanis \\\hline
   \end{tabular}
 \end{frame}
 

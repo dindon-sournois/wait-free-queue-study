@@ -1,5 +1,6 @@
 all:
 	pdflatex slides
+	bibtex8 --wolfgang slides
 	pdflatex slides
 
 clean:

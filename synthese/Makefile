@@ -5,4 +5,4 @@ all:
 	mv main.pdf llucido-synthese.pdf
 
 clean:
-	rm -rf auto/ *.aux *.log *-blx.bib *.bbl *.blg *.dvi *.run.xml
+	rm -rf auto/ *.aux *.log *-blx.bib *.bbl *.blg *.dvi *.run.xml *.out
